@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import Aux from "../../hoc/AuxHoc";
 import Burger from "../../components/Burger/Burger";
 import BuildControls from "../../components/Burger/BuildControls/BuildControls";
-
+import Modal from "../../components/UI/Modal/Modal";
+import OrderSummary from "../../components/Burger/OrderSummary/OrderSummary";
 const INGREDIENT_PRICES = {
   salad: 0.5,
   cheese: 0.4,
@@ -17,6 +18,19 @@ const BurgerBuilder = () => {
     meat: 0,
   });
   const [totalPrice, setTotalPrice] = useState(4);
+  const [purchasable, setPurchaseable] = useState(false);
+  const [purchasing, setPurchasing] = useState(false);
+
+  const updatePurchaseState = (ingredients) => {
+    const sum = Object.keys(ingredients)
+      .map((igKey) => {
+        return ingredients[igKey];
+      })
+      .reduce((sum, el) => {
+        return sum + el;
+      }, 0);
+    setPurchaseable(sum > 0);
+  };
 
   const addIngredientHandler = (type) => {
     const oldCount = ingredient[type];
@@ -30,6 +44,7 @@ const BurgerBuilder = () => {
     const newPrice = oldPrice + priceAddition;
     setTotalPrice(newPrice);
     setIngredient(updatedIngredients);
+    updatePurchaseState(updatedIngredients);
   };
 
   const removeIngredientHandler = (type) => {
@@ -45,7 +60,19 @@ const BurgerBuilder = () => {
     const newPrice = oldPrice - priceDeduction;
     setTotalPrice(newPrice);
     setIngredient(updatedIngredients);
+    updatePurchaseState(updatedIngredients);
   };
+
+  const purchaseHandler = () => {
+    setPurchasing(true);
+  };
+
+  const purchaseCancelHandler = () => {
+    setPurchasing(false);
+  };
+
+  const purchaseContinueHandler = () => {};
+
   const disabledInfo = {
     ...ingredient,
   };
@@ -54,11 +81,22 @@ const BurgerBuilder = () => {
   }
   return (
     <Aux>
+      <Modal show={purchasing} modalClosed={purchaseCancelHandler}>
+        <OrderSummary
+          ingredients={ingredient}
+          purchaseCanceled={purchaseCancelHandler}
+          purchaseContinued={purchaseContinueHandler}
+          price={totalPrice}
+        />
+      </Modal>
       <Burger ingredients={ingredient} />
       <BuildControls
         ingredientAdded={addIngredientHandler}
         ingredientRemoved={removeIngredientHandler}
         disabled={disabledInfo}
+        price={totalPrice}
+        purchasable={purchasable}
+        ordered={purchaseHandler}
       />
     </Aux>
   );
