@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import Aux from "../../hoc/AuxHoc";
+import Aux from "../AuxHoc/AuxHoc";
 import clasess from "./Layout.css";
-import Toolbar from "../Navigation/Toolbar/Toolbar";
-import SideDrawer from "../Navigation/SideDrawer/SideDrawer";
+import Toolbar from "../../components/Navigation/Toolbar/Toolbar";
+import SideDrawer from "../../components/Navigation/SideDrawer/SideDrawer";
 
 const layout = (props) => {
   const [showSideDrawer, setShowSideDrawer] = useState(true);
