@@ -1,9 +1,12 @@
-import React, { useState } from "react";
-import Aux from "../../hoc/AuxHoc";
+import React, { useEffect, useState } from "react";
+import Aux from "../../hoc/AuxHoc/AuxHoc";
 import Burger from "../../components/Burger/Burger";
 import BuildControls from "../../components/Burger/BuildControls/BuildControls";
 import Modal from "../../components/UI/Modal/Modal";
 import OrderSummary from "../../components/Burger/OrderSummary/OrderSummary";
+import Spinner from "../../components/UI/Spinner/Spinner";
+import axios from "../../axios-order";
+import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 const INGREDIENT_PRICES = {
   salad: 0.5,
   cheese: 0.4,
@@ -11,15 +14,26 @@ const INGREDIENT_PRICES = {
   bacon: 0.7,
 };
 const BurgerBuilder = () => {
-  const [ingredient, setIngredient] = useState({
-    salad: 0,
-    bacon: 0,
-    cheese: 0,
-    meat: 0,
-  });
+  const [ingredient, setIngredient] = useState();
   const [totalPrice, setTotalPrice] = useState(4);
   const [purchasable, setPurchaseable] = useState(false);
   const [purchasing, setPurchasing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false)
+  
+  useEffect(() => {
+    axios
+      .get("ingredients.json")
+      .then((response) => {
+        console.log(response);
+        setIngredient(response.data);
+      })
+      .catch((err) => {
+        setError(true);
+      });
+  }, []);
+
+
 
   const updatePurchaseState = (ingredients) => {
     const sum = Object.keys(ingredients)
@@ -71,7 +85,32 @@ const BurgerBuilder = () => {
     setPurchasing(false);
   };
 
-  const purchaseContinueHandler = () => {};
+  const purchaseContinueHandler = () => {
+    setLoading(true);
+    const order = {
+      ingredients: ingredient,
+      price: totalPrice,
+      customer: {
+        name: "Cristian",
+        address: {
+          street: "TestStreet 1",
+          zipCode: "7601",
+          country: "Argentina",
+        },
+        email: "test@test.com",
+      },
+      deliveryMethod: "fastest",
+    };
+    axios
+      .post("/orders.json", order)
+      .then((response) => {
+        setLoading(false);
+        setPurchasing(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+      });
+  };
 
   const disabledInfo = {
     ...ingredient,
@@ -79,27 +118,42 @@ const BurgerBuilder = () => {
   for (let key in disabledInfo) {
     disabledInfo[key] = disabledInfo[key] <= 0;
   }
+  let orderSummary = null;
+  let burger = error ?  <p>Ingredients can't be loaded</p> : <Spinner />;
+  if (ingredient) {
+    burger = (
+      <Aux>
+        <Burger ingredients={ingredient} />
+        <BuildControls
+          ingredientAdded={addIngredientHandler}
+          ingredientRemoved={removeIngredientHandler}
+          disabled={disabledInfo}
+          price={totalPrice}
+          purchasable={purchasable}
+          ordered={purchaseHandler}
+        />
+      </Aux>
+    );
+    orderSummary = (
+      <OrderSummary
+        ingredients={ingredient}
+        purchaseCanceled={purchaseCancelHandler}
+        purchaseContinued={purchaseContinueHandler}
+        price={totalPrice}
+      />
+    );
+  }
+  if (loading) {
+    orderSummary = <Spinner />;
+  }
   return (
     <Aux>
       <Modal show={purchasing} modalClosed={purchaseCancelHandler}>
-        <OrderSummary
-          ingredients={ingredient}
-          purchaseCanceled={purchaseCancelHandler}
-          purchaseContinued={purchaseContinueHandler}
-          price={totalPrice}
-        />
+        {orderSummary}
       </Modal>
-      <Burger ingredients={ingredient} />
-      <BuildControls
-        ingredientAdded={addIngredientHandler}
-        ingredientRemoved={removeIngredientHandler}
-        disabled={disabledInfo}
-        price={totalPrice}
-        purchasable={purchasable}
-        ordered={purchaseHandler}
-      />
+      {burger}
     </Aux>
   );
 };
 
-export default BurgerBuilder;
+export default withErrorHandler(BurgerBuilder, axios);
