@@ -13,14 +13,14 @@ const INGREDIENT_PRICES = {
   meat: 1.3,
   bacon: 0.7,
 };
-const BurgerBuilder = () => {
+const BurgerBuilder = (props) => {
   const [ingredient, setIngredient] = useState();
   const [totalPrice, setTotalPrice] = useState(4);
   const [purchasable, setPurchaseable] = useState(false);
   const [purchasing, setPurchasing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false)
-  
+  const [error, setError] = useState(false);
+
   useEffect(() => {
     axios
       .get("ingredients.json")
@@ -32,8 +32,6 @@ const BurgerBuilder = () => {
         setError(true);
       });
   }, []);
-
-
 
   const updatePurchaseState = (ingredients) => {
     const sum = Object.keys(ingredients)
@@ -86,30 +84,18 @@ const BurgerBuilder = () => {
   };
 
   const purchaseContinueHandler = () => {
-    setLoading(true);
-    const order = {
-      ingredients: ingredient,
-      price: totalPrice,
-      customer: {
-        name: "Cristian",
-        address: {
-          street: "TestStreet 1",
-          zipCode: "7601",
-          country: "Argentina",
-        },
-        email: "test@test.com",
-      },
-      deliveryMethod: "fastest",
-    };
-    axios
-      .post("/orders.json", order)
-      .then((response) => {
-        setLoading(false);
-        setPurchasing(false);
-      })
-      .catch((error) => {
-        setLoading(false);
-      });
+    const queryParams = [];
+    for (let i in ingredient) {
+      queryParams.push(
+        encodeURIComponent(i) + "=" + encodeURIComponent(ingredient[i])
+      );
+    }
+    queryParams.push('price=' + totalPrice)
+    const queryString = queryParams.join("&");
+    props.history.push({
+      pathname: "/checkout",
+      search: queryString,
+    });
   };
 
   const disabledInfo = {
@@ -119,7 +105,7 @@ const BurgerBuilder = () => {
     disabledInfo[key] = disabledInfo[key] <= 0;
   }
   let orderSummary = null;
-  let burger = error ?  <p>Ingredients can't be loaded</p> : <Spinner />;
+  let burger = error ? <p>Ingredients can't be loaded</p> : <Spinner />;
   if (ingredient) {
     burger = (
       <Aux>
