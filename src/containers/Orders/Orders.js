@@ -24,7 +24,6 @@ const Orders = () => {
   return (
     <div>
       {orders.map((order) => {
-        console.log(order)
         return (
           <Order
             key={order.id}

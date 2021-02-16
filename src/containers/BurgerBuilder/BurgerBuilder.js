@@ -25,7 +25,6 @@ const BurgerBuilder = (props) => {
     axios
       .get("ingredients.json")
       .then((response) => {
-        console.log(response);
         setIngredient(response.data);
       })
       .catch((err) => {
@@ -94,7 +93,7 @@ const BurgerBuilder = (props) => {
     const queryString = queryParams.join("&");
     props.history.push({
       pathname: "/checkout",
-      search: queryString,
+      search: '?' + queryString,
     });
   };
 
