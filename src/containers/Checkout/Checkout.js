@@ -1,26 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Route } from "react-router-dom";
 
 import CheckoutSummary from "../../components/Order/CheckoutSummary/CheckoutSummary";
 import ContactData from "../Checkout/ContactData/ContactData";
 const Checkout = (props) => {
-  const [ingredients, setIngredients] = useState({});
-  const [totalPrice, setTotalPrice] = useState(0);
-
-  useEffect(() => {
-    const query = new URLSearchParams(props.location.search);
-    const updateIngredients = {};
-    let price = 0;
-    for (let param of query.entries()) {
-      if (param[0] === "price") {
-        price = param[1];
-      } else {
-        updateIngredients[param[0]] = +param[1];
-      }
-    }
-    setIngredients(updateIngredients);
-    setTotalPrice(price);
-  }, []);
+  const ingredients = useSelector((state) => state.ingredients);
+  const totalPrice = useSelector((state) => state.totalPrice);
 
   const checkoutCancelledHandler = () => {
     props.history.goBack();

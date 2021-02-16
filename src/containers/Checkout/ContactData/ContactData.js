@@ -6,6 +6,7 @@ import Spinner from "../../../components/UI/Spinner/Spinner";
 import Input from "../../../components/UI/Input/Input";
 
 import axios from "../../../axios-order";
+import { useSelector } from "react-redux";
 
 const ContactData = (props) => {
   const [orderForm, setOrderForm] = useState({
@@ -91,6 +92,8 @@ const ContactData = (props) => {
       valid: true,
     },
   });
+  const ingredients = useSelector((state) => state.ingredients);
+  const totalPrice = useSelector((state) => state.totalPrice);
 
   const [loading, setLoading] = useState(false);
   const [formIsValid, setFormIsValid] = useState(false);
@@ -102,8 +105,8 @@ const ContactData = (props) => {
       formData[formElementIdentifier] = orderForm[formElementIdentifier].value;
     }
     const order = {
-      ingredients: props.ingredients,
-      price: props.price,
+      ingredients: ingredients,
+      price: totalPrice,
       orderData: formData,
     };
     axios
