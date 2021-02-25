@@ -8,35 +8,29 @@ import Spinner from "../../components/UI/Spinner/Spinner";
 import axios from "../../axios-order";
 import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 import { useDispatch, useSelector } from "react-redux";
-import * as actionTypes from "../../store/actions";
+import * as actions from "../../store/actions/index";
 
 const BurgerBuilder = (props) => {
   const [purchasing, setPurchasing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  /* const [error, setError] = useState(false); */
 
   const dispatch = useDispatch();
-  const ingredients = useSelector((state) => state.ingredients);
-  const totalPrice = useSelector((state) => state.totalPrice);
-  //const purchasable = useSelector((state) => state.purchasable);
+  const error = useSelector((state) => state.burgerBuilder.error);
+  const ingredients = useSelector((state) => state.burgerBuilder.ingredients);
+  const totalPrice = useSelector((state) => state.burgerBuilder.totalPrice);
+  //const purchased = useSelector((state) => state.orders.purchased);
 
-  /* useEffect(() => {
-    axios
-      .get("ingredients.json")
-      .then((response) => {
-        setIngredient(response.data);
-      })
-      .catch((err) => {
-        setError(true);
-      }); 
-  }, []); */
+  useEffect(() => {
+    dispatch(actions.initIngredients())
+  }, [dispatch]);
 
   const onIngredientAdded = (ingName) => {
-    dispatch({ type: actionTypes.ADD_INGREDIENTS, ingredientName: ingName });
+    dispatch(actions.addIngredients(ingName));
   };
 
   const onIngredientRemoved = (ingName) => {
-    dispatch({ type: actionTypes.REMOVE_INGREDIENTS, ingredientName: ingName });
+    dispatch(actions.removeIngredients(ingName));
   };
 
   const updatePurchaseState = (ingredients) => {
@@ -59,6 +53,7 @@ const BurgerBuilder = (props) => {
   };
 
   const purchaseContinueHandler = () => {
+    dispatch(actions.purchaseInit())
     props.history.push({
       pathname: "/checkout",
     });

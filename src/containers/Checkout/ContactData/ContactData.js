@@ -4,9 +4,11 @@ import Button from "../../../components/UI/Button/Button";
 import classes from "./ContactData.css";
 import Spinner from "../../../components/UI/Spinner/Spinner";
 import Input from "../../../components/UI/Input/Input";
+import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler'
 
 import axios from "../../../axios-order";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import * as orderActions from '../../../store/actions/index'
 
 const ContactData = (props) => {
   const [orderForm, setOrderForm] = useState({
@@ -92,14 +94,15 @@ const ContactData = (props) => {
       valid: true,
     },
   });
-  const ingredients = useSelector((state) => state.ingredients);
-  const totalPrice = useSelector((state) => state.totalPrice);
+  const dispatch = useDispatch()
+  const ingredients = useSelector((state) => state.burgerBuilder.ingredients);
+  const totalPrice = useSelector((state) => state.burgerBuilder.totalPrice);
+  const loading = useSelector((state) => state.orders.loading);
 
-  const [loading, setLoading] = useState(false);
+  //const [loading, setLoading] = useState(false);
   const [formIsValid, setFormIsValid] = useState(false);
   const orderHandler = (e) => {
     e.preventDefault();
-    setLoading(true);
     const formData = {};
     for (let formElementIdentifier in orderForm) {
       formData[formElementIdentifier] = orderForm[formElementIdentifier].value;
@@ -109,7 +112,8 @@ const ContactData = (props) => {
       price: totalPrice,
       orderData: formData,
     };
-    axios
+    dispatch(orderActions.purchaseBurger(order))
+    /* axios
       .post("/orders.json", order)
       .then((response) => {
         setLoading(false);
@@ -117,7 +121,7 @@ const ContactData = (props) => {
       })
       .catch((error) => {
         setLoading(false);
-      });
+      }); */
   };
 
   const checkValidity = (value, rules) => {
@@ -212,4 +216,4 @@ const ContactData = (props) => {
   );
 };
 
-export default ContactData;
+export default withErrorHandler(ContactData, axios);
