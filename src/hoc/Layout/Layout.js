@@ -4,8 +4,8 @@ import clasess from "./Layout.css";
 import Toolbar from "../../components/Navigation/Toolbar/Toolbar";
 import SideDrawer from "../../components/Navigation/SideDrawer/SideDrawer";
 
-const layout = (props) => {
-  const [showSideDrawer, setShowSideDrawer] = useState(true);
+const Layout = (props) => {
+  const [showSideDrawer, setShowSideDrawer] = useState(false);
 
   const sideDrawerClosedHandler = () => {
     setShowSideDrawer(false);
@@ -26,4 +26,4 @@ const layout = (props) => {
   );
 };
 
-export default layout;
+export default Layout;
