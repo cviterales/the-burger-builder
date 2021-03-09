@@ -1,3 +1,9 @@
+# The Burger Builder - SPA made in React.
+
+The project allow build burger with different ingredients, create orders and show orders. </br>
+The principal features for this project is Redux, Redux-Thunk, Firebase, Hooks, HOC, Functionality components and Views components.
+The design template is basic.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
