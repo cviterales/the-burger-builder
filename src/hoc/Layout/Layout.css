@@ -2,3 +2,28 @@
   margin-top: 72px;
   min-width: 350px;
 }
+.img {
+  width: 40px;
+  margin: 1rem;
+  animation: Rotate 4s linear infinite;
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+}
+
+@-moz-keyframes Rotate {
+  100% {
+    -moz-transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes Rotate {
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@keyframes Rotate {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}

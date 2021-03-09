@@ -3,7 +3,7 @@ import { Route, Switch } from "react-router-dom";
 
 import Layout from "./hoc/Layout/Layout";
 import BurgerBuilder from "./containers/BurgerBuilder/BurgerBuilder";
-import Spinner from "./components/UI/Spinner/Spinner"
+import Spinner from "./components/UI/Spinner/Spinner";
 /* import Checkout from "./containers/Checkout/Checkout";
 import Orders from "./containers/Orders/Orders";
 
@@ -30,9 +30,9 @@ function App() {
       >
         <Layout>
           <Switch>
-            <Route exact path="/checkout" component={Checkout} />
-            <Route exact path="/orders" component={Orders} />
             <Route path="/" exact component={BurgerBuilder} />
+            <Route path="/checkout" component={Checkout} />
+            <Route path="/orders" component={Orders} />
           </Switch>
         </Layout>
       </Suspense>
